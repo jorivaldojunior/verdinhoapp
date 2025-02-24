@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Banco Verdinho</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Gradiente verde */
+    .bg-nubank {
+      background: linear-gradient(135deg, #0ad10a, #0536be);
+    }
+
+    /* Fundo mais claro para o ícone de perfil */
+    .bg-perfil {
+      background-color: rgba(255, 255, 255, 0.2);
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* Rolagem horizontal suave */
+    .scroll-horizontal {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+    }
+
+    .scroll-horizontal::-webkit-scrollbar {
+      display: none; /* Esconde a barra de rolagem */
+    }
+
+    /* Estilo para a tela de transação */
+    .tela-transacao {
+      background: linear-gradient(135deg, #0ad10a, #0536be);
+      height: 100vh;
+      width: 100vw;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    .tela-transacao h2 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+
+    .tela-transacao p {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .tela-transacao input {
+      width: 80%;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      margin-bottom: 2rem;
+      font-size: 1.25rem;
+    }
+
+    .tela-transacao .botoes {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .tela-transacao .botoes button {
+      background: white;
+      border-radius: 50%;
+      width: 3rem;
+      height: 3rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .tela-transacao .botoes button svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  </style>
+</head>
+
+<body class="bg-green-600">
+  <div class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="p-4 bg-nubank text-white">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center">
+          <button onclick="abrirModalPerfil()" class="p-2 bg-perfil rounded-full">
+            <!-- Ícone de perfil ou foto -->
+            <div id="fotoPerfilContainer" class="h-12 w-12 rounded-full bg-cover bg-center"></div>
+          </button>
+          <h1 id="mensagemBoasVindas" class="text-1xl font-semibold mt-28 transform -translate-x-10">Olá, Jorivaldo! O Banco do Futuro é Aqui...</h1>
+        </div>
+        <!-- Ícones à direita -->
+        <div class="flex items-center space-x-4">
+          <!-- Ícone de olho -->
+          <button onclick="alternarVisibilidadeSaldo()">
+            <svg id="iconeOlho" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+          </button>
+
+          <!-- Ícone de mensagem -->
+          <button onclick="window.location.href = 'index.html';" class="p-2 bg-transparent">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+    <br />
+
+    <!-- Main Content -->
+    <main class="flex-1 p-4">
+      <!-- Saldo -->
+      <div class="flex justify-between items-center">
+        <div class="text-left">
+          <p class="text-1xl font-bold text-white">Conta</p>
+          <div class="flex items-center">
+            <p id="saldo" class="text-1xl font-bold text-white">R$ 534,56</p>
+          </div>
+        </div>
+        <!-- Sinal de ">" -->
+        <button onclick="alternarVisibilidadeMovimentacoes()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+      <br />
+
+      <!-- Seção de Movimentações (Oculta por padrão) -->
+      <div id="secaoMovimentacoes" class="hidden">
+        <div class="bg-white p-4 rounded-lg">
+          <h2 class="text-lg font-bold text-green-600">Últimas Movimentações:</h2>
+          <ul id="listaMovimentacoes" class="mt-2">
+            <!-- Movimentações serão adicionadas aqui dinamicamente -->
+          </ul>
+        </div>
+        <br />
+      </div>
+
+      <!-- Funcionalidades (Rolagem Horizontal) -->
+      <div class="mt-6 scroll-horizontal">
+        <div class="flex space-x-2 w-max">
+          <!-- PIX -->
+          <button onclick="abrirTelaTransacao('PIX')" class="flex flex-col items-center w-20">
+            <div class="bg-gray-100 p-4 rounded-full flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <span class="mt-2 text-sm text-white">Área Pix</span>
+          </button>
+
+          <!-- Pagar -->
+          <button onclick="abrirTelaTransacao('Pagar')" class="flex flex-col items-center w-20">
+            <div class="bg-gray-100 p-4 rounded-full flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+              </svg>
+            </div>
+            <span class="mt-2 text-sm text-white">Pagar</span>
+          </button>
+
+          <!-- Transferir -->
+          <button onclick="abrirTelaTransacao('Transferir')" class="flex flex-col items-center w-20">
+            <div class="bg-gray-100 p-4 rounded-full flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <span class="mt-2 text-sm text-white">Transferir</span>
+          </button>
+
+          <!-- Depósito -->
+          <button onclick="abrirTelaTransacao('Depósito')" class="flex flex-col items-center w-20">
+            <div class="bg-gray-100 p-4 rounded-full flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <span class="mt-2 text-sm text-white">Depósito</span>
+          </button>
+
+          <!-- Recarregar -->
+          <button onclick="abrirTelaTransacao('Recarregar')" class="flex flex-col items-center w-20">
+            <div class="bg-gray-100 p-4 rounded-full flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+              </svg>
+            </div>
+            <span class="mt-2 text-sm text-white">Recarregar</span>
+          </button>
+
+          <!-- Cartão -->
+          <button onclick="abrirCartaoCredito()" class="flex flex-col items-center w-20">
+            <div class="bg-gray-100 p-4 rounded-full flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+            </div>
+            <span class="mt-2 text-sm text-white">Cartão</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Seção de Movimentações -->
+      <div id="secaoMovimentacoes" class="mt-6 hidden">
+        <div class="bg-white p-4 rounded-lg">
+          <h2 class="text-lg font-bold text-green-600">Últimas Movimentações</h2>
+          <ul id="listaMovimentacoes" class="mt-2">
+            <!-- Movimentações serão adicionadas aqui dinamicamente -->
+          </ul>
+        </div>
+      </div>
+
+      <!-- Restante do conteúdo... -->
+       <!-- Cards de Mensagens (Rolagem Horizontal) -->
+      <div class="mt-6 scroll-horizontal">
+        <div class="flex space-x-4 w-max">
+          <!-- Card 1: Convide todo mundo para o Nu -->
+          <div class="bg-gray-100 p-6 rounded-lg w-64">
+            <div class="flex items-center">
+              <!-- Ícone -->
+              <div class="bg-green-600 p-3 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                </svg>
+              </div>
+              <!-- Texto -->
+              <div class="ml-4">
+                <p class="text-sm font-bold text-green-600">Sua Conta!</p>
+                <p class="text-xs text-gray-500">
+                  Coisa boa a gente compartilha
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Seguro de Vida -->
+          <div class="bg-gray-100 p-6 rounded-lg w-64">
+            <div class="flex items-center">
+              <!-- Ícone -->
+              <div class="bg-green-600 p-3 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <!-- Texto -->
+              <div class="ml-4">
+                <p class="text-sm font-bold text-green-600">Seguro de Vida</p>
+                <p class="text-xs text-gray-500">
+                  Proteção para você e sua família
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Aumente seu limite -->
+          <div class="bg-gray-100 p-6 rounded-lg w-64">
+            <div class="flex items-center">
+              <!-- Ícone -->
+              <div class="bg-green-600 p-3 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                </svg>
+              </div>
+              <!-- Texto -->
+              <div class="ml-4">
+                <p class="text-sm font-bold text-green-600">
+                  Aumente seu limite
+                </p>
+                <p class="text-xs text-gray-500">
+                  Traga seus dados e aproveite
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nova Seção: Próximos 7 Dias -->
+      <div class="mt-6">
+        <hr class="border-t border-gray-300 mb-4" />
+        <div class="text-left">
+          <h2 class="text-lg font-bold text-white">Você sempre um passo a frente...</h2>
+          <p class="text-sm text-white">R$ 901,23 a pagar em 4 contas</p>
+        </div>
+        <hr class="border-t border-gray-300 mt-4" />
+      </div>
+
+      <!-- Nova Seção: Cartão de Crédito -->
+      <div class="mt-6">
+        <div class="flex justify-between items-center">
+          <div class="text-left">
+            <p class="text-lg font-bold text-white">Cartão de Crédito</p>
+            <p class="text-sm text-white">Fatura fechada</p>
+            <p class="text-lg font-bold text-white">R$ 371,94</p>
+            <p class="text-sm text-white">Vencimento dia 05</p>
+          </div>
+          <!-- Sinal de ">" -->
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
+        <!-- Botões Pagar e Parcelar -->
+        <div class="mt-4 flex space-x-2">
+          <button class="bg-green-600 text-white px-4 py-2 rounded-full">
+            Pagar
+          </button>
+          <button class="bg-green-600 text-white px-4 py-2 rounded-full">
+            Parcelar
+          </button>
+        </div>
+        <hr class="border-t border-gray-300 mt-4" />
+      </div>
+
+      <!-- Nova Seção: Empréstimo -->
+      <div class="mt-6">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center w-full">
+            <p class="text-lg font-bold text-white">Empréstimo</p>
+            <!-- Sinal de ">" -->
+            <div class="ml-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        <p class="text-sm text-white mt-2">
+          Tudo certo com sua antecipação do saque-aniversário FGTS! O desconto da
+          próxima parcela será em 5 de 2025.
+        </p>
+      </div>
+
+      <!-- Traço separador -->
+      <hr class="my-6 border-gray-200">
+
+      <!-- Nova Seção: Descubra Mais -->
+      <div class="mt-6">
+        <h2 class="text-lg font-bold text-white text-left">Um bom négocio é sempre aqui!</h2>
+        <div class="mt-4 scroll-horizontal">
+          <div class="flex space-x-4 w-max">
+            <!-- Card 1 -->
+            <div class="flex flex-col w-56 bg-gray-100 rounded-lg shadow-md p-4">
+              <img src="./img/log.webp" alt="Imagem do card" class="w-full h-24 object-cover rounded-lg" />
+              <h3 class="mt-4 text-sm font-bold text-gray-700 text-left">Termos de Uso</h3>
+              <p class="mt-2 text-xs text-gray-500 text-left">
+                Explicamos o que diz esse documento do Nubank.
+              </p>
+              <button class="mt-4 bg-green-600 text-white text-xs font-semibold py-1 px-3 rounded-full self-start">
+                Conhecer
+              </button>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="flex flex-col w-56 bg-gray-100 rounded-lg shadow-md p-4">
+              <img src="./img/log4.webp" alt="Imagem do card" class="w-full h-24 object-cover rounded-lg" />
+              <h3 class="mt-4 text-sm font-bold text-gray-700 text-left">Indique para os amigos</h3>
+              <p class="mt-2 text-xs text-gray-500 text-left">
+                Compartilhe como é facil estar no controle.
+              </p>
+              <button class="mt-4 bg-green-600 text-white text-xs font-semibold py-1 px-3 rounded-full self-start">
+                Conhecer
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pb-16">
+        <!-- Espaço para o footer fixo -->
+      </div>
+
+      <!-- Footer fixo centralizado e arredondado -->
+<footer class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white shadow-md p-4 rounded-full w-52">
+    <div class="flex justify-around items-center">
+     
+      <button onclick="abrirCartaoCredito()" class="flex flex-col items-center text-green-600">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+          stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+      </button>
+
+      <button class="flex flex-col items-center text-green-600">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+          stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+        </svg>
+      </button>
+  
+  
+      <button onclick="abrirModalPerfil()" class="flex flex-col items-center text-green-600">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+          stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+        </svg>
+      </button>
+    </div>
+  </footer>
+  
+    </main>
+  </div>
+
+  <!-- Modal de Perfil -->
+  <div id="modalPerfil" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-lg w-96">
+      <h2 class="text-lg font-bold mb-4">Editar Perfil</h2>
+      <input type="file" id="fotoPerfil" class="mb-4" accept="image/*">
+      <input type="text" id="nomeUsuario" placeholder="Nome do Usuário" class="w-full p-2 border rounded mb-4">
+      <button onclick="salvarPerfil()" class="bg-green-600 text-white px-4 py-2 rounded-full">Salvar</button>
+      <button onclick="fecharModalPerfil()" class="ml-2 bg-gray-600 text-white px-4 py-2 rounded-full">Fechar</button>
+    </div>
+  </div>
+
+  <!-- Tela de Transação -->
+  <div id="telaTransacao" class="tela-transacao hidden">
+    <div class="text-center">
+      <h2 id="tituloTransacao" class="text-2xl font-bold mb-4 flex items-center justify-center">
+        <span id="iconeTransacao" class="mr-2"></span>
+        Qual o valor da transação?
+      </h2>
+      <p id="saldoAtual" class="text-xl mb-8">Seu saldo é: <span id="saldoTransacao"></span></p>
+      <input type="number" id="valorTransacao" placeholder="R$ 0,00" class="w-full p-4 border rounded mb-8 text-black">
+      <div id="campoInformacoesAdicionais" class="w-full  rounded mb-8 text-black">
+        <!-- Campo dinâmico para informações adicionais -->
+      </div>
+      <div class="botoes">
+        <button onclick="fecharTelaTransacao()" class="bg-white text-gray-600">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <button onclick="confirmarTransacao()" class="bg-white text-green-600">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let saldo = 534.56; // Saldo inicial
+    const movimentacoes = []; // Lista de movimentações
+    let tipoTransacaoAtual = ''; // Tipo de transação atual
+
+    // Função para formatar valores em moeda brasileira
+    function formatarMoeda(valor) {
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+    }
+
+    // Função para atualizar o saldo na tela
+    function atualizarSaldo() {
+      document.getElementById('saldo').textContent = formatarMoeda(saldo);
+    }
+
+    // Função para adicionar uma movimentação
+    function adicionarMovimentacao(tipo, valor, informacoesAdicionais) {
+      const data = new Date().toLocaleString(); // Data e hora atual
+      movimentacoes.push({ tipo, valor, data, informacoesAdicionais });
+
+      // Atualiza o saldo
+      if (tipo === 'Depósito') {
+        saldo += valor;
+      } else {
+        saldo -= valor;
+      }
+
+      // Atualiza a lista de movimentações
+      const listaMovimentacoes = document.getElementById('listaMovimentacoes');
+      listaMovimentacoes.innerHTML = movimentacoes.map(mov => `
+        <li class="flex items-center justify-between py-3 border-b">
+          <div class="flex items-center">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center ${mov.tipo === 'Depósito' ? 'bg-green-100' : 'bg-red-100'}">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ${mov.tipo === 'Depósito' ? 'text-green-600' : 'text-red-600'}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${obterIconeTransacao(mov.tipo)}" />
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-900">${mov.tipo}</p>
+              <p class="text-sm text-gray-500">${mov.data}</p>
+              <p class="text-sm text-gray-500">${mov.informacoesAdicionais}</p>
+            </div>
+          </div>
+          <p class="text-sm ${mov.tipo === 'Depósito' ? 'text-green-600' : 'text-red-600'}">${formatarMoeda(mov.valor)}</p>
+        </li>
+      `).join('');
+
+      // Atualiza o saldo na tela
+      atualizarSaldo();
+    }
+
+    // Função para abrir a tela de transação
+    function abrirTelaTransacao(tipo) {
+      tipoTransacaoAtual = tipo;
+      document.getElementById('tituloTransacao').textContent = `Qual o valor ${tipo}?`;
+      document.getElementById('saldoTransacao').textContent = formatarMoeda(saldo);
+
+      // Adiciona o ícone correspondente ao tipo de transação
+      const iconeTransacao = document.getElementById('iconeTransacao');
+      if (iconeTransacao) {
+        iconeTransacao.innerHTML = obterIconeTransacao(tipo);
+      } else {
+        console.error('Elemento iconeTransacao não encontrado!');
+      }
+
+      // Configura o campo de informações adicionais
+      const campoInformacoesAdicionais = document.getElementById('campoInformacoesAdicionais');
+      campoInformacoesAdicionais.innerHTML = ''; // Limpa o campo
+
+      switch (tipo) {
+        case 'PIX':
+          campoInformacoesAdicionais.innerHTML = `
+            <input type="text" id="chavePix" placeholder="Chave PIX" class="w-full p-4 border rounded mb-4 text-xl">
+          `;
+          break;
+        case 'Transferir':
+          campoInformacoesAdicionais.innerHTML = `
+            <input type="text" id="agencia" placeholder="Agência" class="w-full p-4 border rounded mb-4 text-xl">
+            <input type="text" id="conta" placeholder="Conta" class="w-full p-4 border rounded mb-4 text-xl">
+          `;
+          break;
+        case 'Recarregar':
+          campoInformacoesAdicionais.innerHTML = `
+            <input type="text" id="operadora" placeholder="Operadora" class="w-full p-4 border rounded mb-4 text-xl">
+          `;
+          break;
+        case 'Depósito':
+          campoInformacoesAdicionais.innerHTML = `
+            <input type="text" id="origemDeposito" placeholder="Origem do depósito" class="w-full p-4 border rounded mb-4 text-xl">
+          `;
+          break;
+        default:
+          campoInformacoesAdicionais.innerHTML = '';
+      }
+
+      document.getElementById('telaTransacao').classList.remove('hidden');
+    }
+
+    // Função para obter o ícone da transação
+    function obterIconeTransacao(tipo) {
+      switch (tipo) {
+        case 'PIX':
+          return `M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z`;
+        case 'Pagar':
+          return `M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z`;
+        case 'Transferir':
+          return `M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z`;
+        case 'Depósito':
+          return `M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z`;
+        case 'Recarregar':
+          return `M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3`;
+        default:
+          return '';
+      }
+    }
+
+    // Função para fechar a tela de transação
+    function fecharTelaTransacao() {
+      document.getElementById('telaTransacao').classList.add('hidden');
+    }
+
+    // Função para confirmar a transação
+    function confirmarTransacao() {
+      const valor = parseFloat(document.getElementById('valorTransacao').value);
+      if (!isNaN(valor)) {
+        if (tipoTransacaoAtual !== 'Depósito' && valor > saldo) {
+          alert('Saldo insuficiente!');
+        } else {
+          let informacoesAdicionais = '';
+          switch (tipoTransacaoAtual) {
+            case 'PIX':
+              informacoesAdicionais = `Chave PIX: ${document.getElementById('chavePix').value}`;
+              break;
+            case 'Transferir':
+              informacoesAdicionais = `Agência: ${document.getElementById('agencia').value}, Conta: ${document.getElementById('conta').value}`;
+              break;
+            case 'Recarregar':
+              informacoesAdicionais = `Operadora: ${document.getElementById('operadora').value}`;
+              break;
+            case 'Depósito':
+              informacoesAdicionais = `Origem: ${document.getElementById('origemDeposito').value}`;
+              break;
+            default:
+              informacoesAdicionais = '';
+          }
+
+          adicionarMovimentacao(tipoTransacaoAtual, valor, informacoesAdicionais);
+          fecharTelaTransacao();
+        }
+      } else {
+       
+      }
+    }
+
+    // Função para alternar a visibilidade do saldo
+    function alternarVisibilidadeSaldo() {
+      const saldoElemento = document.getElementById('saldo');
+      const iconeOlho = document.getElementById('iconeOlho');
+
+      if (saldoElemento.textContent === formatarMoeda(saldo)) {
+        saldoElemento.textContent = '••••••';
+        iconeOlho.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />`;
+      } else {
+        saldoElemento.textContent = formatarMoeda(saldo);
+        iconeOlho.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
+      }
+    }
+
+    // Função para alternar a visibilidade da seção de movimentações
+    function alternarVisibilidadeMovimentacoes() {
+      const saldoElemento = document.getElementById('saldo');
+      if (saldoElemento.textContent !== '••••••') {
+        const secaoMovimentacoes = document.getElementById('secaoMovimentacoes');
+        secaoMovimentacoes.classList.toggle('hidden');
+      }
+    }
+
+    // Função para salvar o perfil
+    function salvarPerfil() {
+      const nomeUsuario = document.getElementById('nomeUsuario').value;
+      const fotoPerfil = document.getElementById('fotoPerfil').files[0];
+
+      if (nomeUsuario) {
+        localStorage.setItem('nomeUsuario', nomeUsuario);
+        document.getElementById('mensagemBoasVindas').textContent = `Olá, ${nomeUsuario}! O Banco do Futuro é Aqui...`;
+      }
+
+      if (fotoPerfil) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          localStorage.setItem('fotoPerfil', e.target.result);
+          document.getElementById('fotoPerfilContainer').style.backgroundImage = `url(${e.target.result})`;
+        };
+        reader.readAsDataURL(fotoPerfil);
+      }
+
+      fecharModalPerfil();
+    }
+
+    // Função para fechar o modal de perfil
+    function fecharModalPerfil() {
+      document.getElementById('modalPerfil').classList.add('hidden');
+    }
+
+    // Função para abrir o modal de perfil
+    function abrirModalPerfil() {
+      document.getElementById('modalPerfil').classList.remove('hidden');
+    }
+
+    // Carregar perfil ao iniciar a página
+    window.onload = function () {
+      const nomeUsuario = localStorage.getItem('nomeUsuario');
+      const fotoPerfil = localStorage.getItem('fotoPerfil');
+
+      if (nomeUsuario) {
+        document.getElementById('mensagemBoasVindas').textContent = `Olá, ${nomeUsuario}! O Banco do Futuro é Aqui...`;
+      }
+
+      if (fotoPerfil) {
+        document.getElementById('fotoPerfilContainer').style.backgroundImage = `url(${fotoPerfil})`;
+      }
+
+      // Atualiza o saldo inicial
+      atualizarSaldo();
+    };
+  </script>
+</body>
+
+</html>
