@@ -1,3 +1,57 @@
+ // Lógica para exibir o botão após 6 segundos
+ setTimeout(function () {
+  document.getElementById("openFingerprintScreen").classList.remove("hidden");
+}, 6000);
+
+// Lógica para abrir a tela de impressão digital
+document.getElementById("openFingerprintScreen").addEventListener("click", function () {
+  document.getElementById("fingerprintScreen").classList.remove("hidden");
+});
+
+// Lógica para abrir a tela de padrão (desenho)
+document.getElementById("usePattern").addEventListener("click", function () {
+  document.getElementById("fingerprintScreen").classList.add("hidden");
+  document.getElementById("patternScreen").classList.remove("hidden");
+});
+
+// Lógica do desenho
+const points = document.querySelectorAll("[data-point]");
+let selectedPoints = [];
+
+// Função para verificar se os pontos 1, 2 e 3 foram selecionados
+function checkPattern() {
+  const requiredPoints = [1, 2, 3];
+  const isPatternCorrect = requiredPoints.every(point => selectedPoints.includes(point));
+
+  if (isPatternCorrect) {
+    // Redireciona para index1.html após 1 segundo
+    setTimeout(() => {
+      window.location.href = "index1.html";
+    }, 1000);
+  }
+}
+
+// Adiciona eventos de clique/toque nas bolinhas
+points.forEach((point) => {
+  point.addEventListener("click", function () {
+    const pointNumber = parseInt(point.getAttribute("data-point"));
+
+    // Adiciona o ponto à lista de selecionados (se ainda não estiver)
+    if (!selectedPoints.includes(pointNumber)) {
+      selectedPoints.push(pointNumber);
+      point.classList.add("selected");
+    }
+
+    // Verifica o padrão
+    checkPattern();
+  });
+});
+
+
+
+
+
+
 let saldo = 534.56; // Saldo inicial
     const movimentacoes = []; // Lista de movimentações
     let tipoTransacaoAtual = ''; // Tipo de transação atual
@@ -182,7 +236,7 @@ let saldo = 534.56; // Saldo inicial
 
       if (nomeUsuario) {
         localStorage.setItem('nomeUsuario', nomeUsuario);
-        document.getElementById('mensagemBoasVindas').textContent = `Olá, ${nomeUsuario}! O Banco do Futuro é Aqui...`;
+        document.getElementById('mensagemBoasVindas').textContent = `Olá ${nomeUsuario}, Banco do Futuro é Aqui...`;
       }
 
       if (fotoPerfil) {
