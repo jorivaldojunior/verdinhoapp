@@ -1,10 +1,6 @@
 
 
 
-
-
-
-
 let saldo = 534.56; // Saldo inicial
     const movimentacoes = []; // Lista de movimentações
     let tipoTransacaoAtual = ''; // Tipo de transação atual
